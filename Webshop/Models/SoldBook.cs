@@ -5,7 +5,7 @@ using System.Text;
 
 namespace WebbShopApi.Models
 {
-    class SoldBook
+    public class SoldBook
     {
         [Key]
         public int Id { get; set; }

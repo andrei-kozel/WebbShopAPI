@@ -41,9 +41,9 @@ namespace WebbShopApi.Helpers
             return new List<Book>();
         }
 
-        public static List<Books> GetAuthors(string keyword)
+        public static List<Book> GetAuthors(string keyword)
         {
-            return new List<Books>();
+            return new List<Book>();
         }
 
         public static bool BuyBook(int userId, int bookId)
@@ -71,14 +71,14 @@ namespace WebbShopApi.Helpers
 
         }
 
-        public static List<String> ListUsers(int adminId)
+        public static List<User> ListUsers(int adminId)
         {
-            return new List<String>();
+            return new List<User>();
         }
 
-        public static List<String> FindUser(int adminId, string keyword)
+        public static List<User> FindUser(int adminId, string keyword)
         {
-            return new List<String>();
+            return new List<User>();
         }
 
         public static bool UpdateBook(int adminId, int Id, string title, string author, int price)
