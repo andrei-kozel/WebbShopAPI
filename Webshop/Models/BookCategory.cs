@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Webshop.Models
+namespace WebbShopApi.Models
 {
     class BookCategory
     {

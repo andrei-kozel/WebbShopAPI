@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Webshop
+namespace WebbShopApi
 {
     class Program
     {

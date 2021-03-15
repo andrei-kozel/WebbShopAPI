@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Webshop.Database
+namespace WebbShopApi.Database
 {
 using Microsoft.EntityFrameworkCore;
 
