@@ -1,14 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using WebbShopApi.Database;
 using WebbShopApi.Models;
 
 namespace WebbShopApi.Helpers
 {
     public static class WebbShopAPI
     {
+        /// <summary>
+        /// Login the user
+        /// </summary>
+        /// <param name="username">used to specify username</param>
+        /// <param name="password">used to specify password</param>
+        /// <returns>user id if success; 0 if user doesn't exist</returns>
         public static int Login(string username, string password)
         {
+            using(var db = new MyContext())
+            {
+                var user = db.Users.FirstOrDefault(u => u.Name == username && u.Password == password);
+                if(user != null)
+                {
+                    user.LastLogin = DateTime.Now;
+                    user.SessionTimer = DateTime.Now;
+                    db.Users.Update(user);
+                    db.SaveChanges();
+                    return user.Id;
+                }
+            }
             return 0;
         }
 
