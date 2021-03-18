@@ -356,11 +356,15 @@ namespace WebbShopApi.Helpers
             try
             {
                 var category = context.BookCategories.FirstOrDefault(c => c.Name == name);
-                if (IsAdmin(adminId) && category == null)
+                if (IsAdmin(adminId) && category == null) 
                 {
                     context.BookCategories.Add(new BookCategory { Name = name });
                     context.SaveChanges();
                     return true;
+                } else
+                {
+                    Console.WriteLine("Category already exist");
+                    return false;
                 }
             }
             catch (Exception e)
