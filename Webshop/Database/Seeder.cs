@@ -14,6 +14,7 @@ namespace WebbShopApi.Database
             {
                 if (db.BookCategories.Count() == 0)
                 {
+                    // create categories
                     db.BookCategories.Add(new BookCategory { Name = "Horror" });
                     db.BookCategories.Add(new BookCategory { Name = "Humor" });
                     db.BookCategories.Add(new BookCategory { Name = "Science Fiction" });
@@ -23,16 +24,19 @@ namespace WebbShopApi.Database
 
                     if (db.Users.Count() == 0)
                     {
+                        // add users
                         db.Users.Add(new User { Name = "CodicRulez", IsAdmin = true });
                         db.Users.Add(new User { Name = "Codic2021", IsAdmin = false });
                         db.SaveChanges();
                     }
 
+                    // get categories id
                     var horrorId = db.BookCategories.Single(c => c.Name == "Horror").BookCategoryId;
                     var scienceId = db.BookCategories.Single(c => c.Name == "Science Fiction").BookCategoryId;
 
                     if (db.Books.Count() == 0)
                     {
+                        // add books
                         db.Books.Add(new Book { Name = "Cabal (Nightbreed)", Author = "Clive Barker", Price = 250, Amount = 3, BookCategoryId = horrorId });
                         db.Books.Add(new Book { Name = "The Shining", Author = "Stephen King", Price = 200, Amount = 2, BookCategoryId = horrorId });
                         db.Books.Add(new Book { Name = "Doctor Sleep", Author = "Stephen King", Price = 200, Amount = 1, BookCategoryId = horrorId });
