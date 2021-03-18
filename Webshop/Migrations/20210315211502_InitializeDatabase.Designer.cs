@@ -10,8 +10,8 @@ using WebbShopApi.Database;
 namespace WebbShopApi.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20210315181232_initializeTables")]
-    partial class initializeTables
+    [Migration("20210315211502_InitializeDatabase")]
+    partial class InitializeDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,7 +23,7 @@ namespace WebbShopApi.Migrations
 
             modelBuilder.Entity("WebbShopApi.Models.Book", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("BookId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -34,7 +34,7 @@ namespace WebbShopApi.Migrations
                     b.Property<string>("Author")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int>("BookCategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -43,14 +43,16 @@ namespace WebbShopApi.Migrations
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("BookId");
+
+                    b.HasIndex("BookCategoryId");
 
                     b.ToTable("Books");
                 });
 
             modelBuilder.Entity("WebbShopApi.Models.BookCategory", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("BookCategoryId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -58,7 +60,7 @@ namespace WebbShopApi.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("BookCategoryId");
 
                     b.ToTable("BookCategories");
                 });
@@ -73,7 +75,7 @@ namespace WebbShopApi.Migrations
                     b.Property<string>("Author")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int>("BookCategoryId")
                         .HasColumnType("int");
 
                     b.Property<int>("Price")
@@ -90,12 +92,14 @@ namespace WebbShopApi.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BookCategoryId");
+
                     b.ToTable("SoldBooks");
                 });
 
             modelBuilder.Entity("WebbShopApi.Models.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -118,9 +122,31 @@ namespace WebbShopApi.Migrations
                     b.Property<DateTime>("SessionTimer")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.HasKey("UserId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("WebbShopApi.Models.Book", b =>
+                {
+                    b.HasOne("WebbShopApi.Models.BookCategory", "BookCategory")
+                        .WithMany()
+                        .HasForeignKey("BookCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BookCategory");
+                });
+
+            modelBuilder.Entity("WebbShopApi.Models.SoldBook", b =>
+                {
+                    b.HasOne("WebbShopApi.Models.BookCategory", "BookCategory")
+                        .WithMany()
+                        .HasForeignKey("BookCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BookCategory");
                 });
 #pragma warning restore 612, 618
         }

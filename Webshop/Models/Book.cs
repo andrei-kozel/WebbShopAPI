@@ -8,11 +8,12 @@ namespace WebbShopApi.Models
     public class Book
     {
         [Key]
-        public int Id { get; set; }
+        public int BookId { get; set; }
         public string Name { get; set; }
         public string Author { get; set; }
         public int Price { get; set; }
         public int Amount { get; set; }
-        public int CategoryId { get; set; }
+        public int BookCategoryId { get; set; }
+        public BookCategory BookCategory { get; set; }
     }
 }
