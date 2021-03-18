@@ -11,9 +11,24 @@ namespace WebbShopApi
         {
             Seeder.Seed();
             //Example1();
-            WebbShopAPI.UpdateBook(2,10,"ad", "aaa", 10);
+            //Example2();
+            //Example3();
         }
 
+        private static void Example3()
+        {
+            LoginAsAdmin();
+            WebbShopAPI.AddUser(2, "Test", "Test");
+        }
+
+        private static void Example2()
+        {
+            LoginAsAdmin();
+            CreateCategory();
+            MoveBookToNewCategory();
+        }
+
+     
         private static void Example1()
         {
             LogInAsTestUser();
@@ -24,6 +39,52 @@ namespace WebbShopApi
             GetAmount(1);
             BuyBook(1);
             GetAmount(1);
+        }
+
+        private static void MoveBookToNewCategory()
+        {
+            Console.WriteLine("TEST: move book to new category ");
+            Console.WriteLine();
+            if (WebbShopAPI.AddBookToCategory(2, 1, 3))
+            {
+                Console.WriteLine("Book moved");
+            }
+            else
+            {
+                Console.WriteLine("Error");
+            }
+            Continue();
+        }
+
+
+        private static void CreateCategory()
+        {
+            Console.WriteLine("TEST: create category ");
+            Console.WriteLine();
+            if (WebbShopAPI.AddCategory(2, "Test category"))
+            {
+                Console.WriteLine("Category created");
+            }
+            else
+            {
+                Console.WriteLine("Error");
+            }
+            Continue();
+        }
+
+        private static void LoginAsAdmin()
+        {
+            Console.WriteLine("TEST: Login as an admin ");
+            Console.WriteLine();
+            if (WebbShopAPI.Login("CodicRulez", "Codic2021") != 0)
+            {
+                Console.WriteLine("You are logged in as an admin CodicRulez");
+            }
+            else
+            {
+                Console.WriteLine("Error: you can't loggin");
+            }
+            Continue();
         }
 
         private static void BuyBook(int bookId)
