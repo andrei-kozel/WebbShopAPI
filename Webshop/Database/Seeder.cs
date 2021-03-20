@@ -6,8 +6,14 @@ using WebbShopApi.Models;
 
 namespace WebbShopApi.Database
 {
+    /// <summary>
+    /// Defines the <see cref="Seeder" />.
+    /// </summary>
     public static class Seeder
     {
+        /// <summary>
+        /// Create basic data
+        /// </summary>
         public static void Seed()
         {
             using (var db = new MyContext())

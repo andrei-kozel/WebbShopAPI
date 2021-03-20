@@ -7,6 +7,9 @@ namespace WebbShopApi.Database
     using Microsoft.EntityFrameworkCore;
     using WebbShopApi.Models;
 
+    /// <summary>
+    /// Defines the <see cref="MyContext" />.
+    /// </summary>
     class MyContext : DbContext
     {
         private const string DatabaseName = "WebbShopAndreiKozel";

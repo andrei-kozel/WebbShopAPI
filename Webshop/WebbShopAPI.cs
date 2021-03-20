@@ -1,23 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using WebbShopApi.Database;
 using WebbShopApi.Models;
 
 namespace WebbShopApi.Helpers
 {
+    /// <summary>
+    /// Defines the <see cref="WebbShopAPI" />.
+    /// </summary>
     public static class WebbShopAPI
     {
+        /// <summary>
+        /// Defines the context[<see cref="MyContext"/>]
+        /// </summary>
         private static MyContext context = new MyContext();
+
+        /// <summary>
+        /// Defines the temporary <see cref="User"/>
+        /// </summary>
         private static User tempUser;
 
         /// <summary>
-        /// Login the user
+        /// Login the <see cref="User"/>
         /// </summary>
-        /// <param name="username">used to specify username</param>
-        /// <param name="password">used to specify password</param>
-        /// <returns>user id if success; 0 if user doesn't exist</returns>
+        /// <param name="username">used to specify username <see cref="User.Name"/></param>
+        /// <param name="password">used to specify password <see cref="User.Password"/></param>
+        /// <returns>user id if success; 0 if user doesn't exist [<see cref="int"/>]</returns>
         public static int Login(string username, string password)
         {
             var user = context.Users.FirstOrDefault(u => u.Name == username && u.Password == password);
@@ -38,9 +47,9 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// Logout the user
+        /// Logout the <see cref="User"/>
         /// </summary>
-        /// <param name="userId">used to specify user id</param>
+        /// <param name="userId">used to specify user id <see cref="User.UserId"/></param>
         public static void Logout(int userId)
         {
             var user = context.Users.FirstOrDefault(u => u.UserId == userId && u.SessionTimer > DateTime.Now.AddMinutes(-15));
@@ -58,9 +67,9 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// List all categories
+        /// List all <see cref="BookCategory"/>
         /// </summary>
-        /// <returns>List<BookCategory></returns>
+        /// <returns><see cref="List{BookCategory}"/></returns>
         public static List<BookCategory> GetCategories()
         {
             UpdateSession();
@@ -68,10 +77,10 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// List of categories matching keyword
+        /// List of <see cref="BookCategory"/>s matching keyword
         /// </summary>
-        /// <param name="keyword">used to specifie keyword</param>
-        /// <returns>List<BookCategory></returns>
+        /// <param name="keyword">used to specifie keyword <see cref="string"/></param>
+        /// <returns><see cref="List{BookCategory}"/></returns>
         public static List<BookCategory> GetCategories(string keyword)
         {
             UpdateSession();
@@ -79,10 +88,10 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// List of books in category
+        /// List of <see cref="Book"/>s in <see cref="BookCategory"/>
         /// </summary>
-        /// <param name="categoryId"></param>
-        /// <returns>List<Book></returns>
+        /// <param name="categoryId">Category Id <see cref="int"/></param>
+        /// <returns><see cref="List{Book}"/></returns>
         public static List<Book> GetCategory(int categoryId)
         {
             UpdateSession();
@@ -90,10 +99,10 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// List of books with amount>0
+        /// List of <see cref="Book"/>s with amount>0
         /// </summary>
-        /// <param name="categoryId">used to specify category id</param>
-        /// <returns>List<Book></returns>
+        /// <param name="categoryId">used to specify category id <see cref="int"/></param>
+        /// <returns><see cref="List{Book}"/></returns>
         public static List<Book> GetAvailableBooks(int categoryId)
         {
             UpdateSession();
@@ -101,10 +110,10 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// Get information about book
+        /// Get information about  <see cref="Book"/>
         /// </summary>
-        /// <param name="bookId">used to specify book id</param>
-        /// <returns>Book object</returns>
+        /// <param name="bookId">used to specify book id <see cref="int"/></param>
+        /// <returns>Book object <see cref="Book"/></returns>
         public static Book GetBook(int bookId)
         {
             UpdateSession();
@@ -112,10 +121,10 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// List of books matching keyword
+        /// List of <see cref="Book"/>s matching keyword
         /// </summary>
-        /// <param name="keyword">used to specifie keyword</param>
-        /// <returns>List<Book></returns>
+        /// <param name="keyword">used to specifie keyword <see cref="string"/></param>
+        /// <returns><see cref="List{Book}"/></returns>
         public static List<Book> GetBooks(string keyword)
         {
             UpdateSession();
@@ -123,10 +132,10 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// List of books matching keyword in author
+        /// List of <see cref="Book"/>s matching keyword in author
         /// </summary>
-        /// <param name="keyword">used to specify keyword</param>
-        /// <returns>List<Book></returns>
+        /// <param name="keyword">used to specify keyword <see cref="string"/></param>
+        /// <returns><see cref="List{Book}"/></returns>
         public static List<Book> GetAuthors(string keyword)
         {
             UpdateSession();
@@ -134,11 +143,11 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// Buy a book from the store. 
+        /// Buy a <see cref="Book"/> from the store. 
         /// </summary>
-        /// <param name="userId">user id</param>
-        /// <param name="bookId">book id</param>
-        /// <returns>true or fale</returns>
+        /// <param name="userId">user id <see cref="int"/></param>
+        /// <param name="bookId">book id <see cref="int"/></param>
+        /// <returns><see cref="bool"/></returns>
         public static bool BuyBook(int userId, int bookId)
         {
             UpdateSession();
@@ -166,10 +175,10 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// Check if customer is online
+        /// Check if <see cref="User"/> is online
         /// </summary>
-        /// <param name="userId">user id</param>
-        /// <returns>string.Empty if offline, "Pong" if online</returns>
+        /// <param name="userId">user id <see cref="int"/></param>
+        /// <returns><see cref="string"/></returns>
         public static string Ping(int userId)
         {
             UpdateSession();
@@ -182,12 +191,12 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// Register a new customer
+        /// Register a new <see cref="User"/>
         /// </summary>
-        /// <param name="name">Customer name</param>
-        /// <param name="password">Password</param>
-        /// <param name="passwordVerify">Repeat password</param>
-        /// <returns>true if success</returns>
+        /// <param name="name">Customer name <see cref="string"/></param>
+        /// <param name="password">Password <see cref="string"/></param>
+        /// <param name="passwordVerify">Repeat password  <see cref="string"/></param>
+        /// <returns> <see cref="bool"/></returns>
         public static bool Register(string name, string password, string passwordVerify)
         {
             UpdateSession();
@@ -202,16 +211,16 @@ namespace WebbShopApi.Helpers
         // ADMIN FUNCTIONS BELOW
 
         /// <summary>
-        /// Add a new book
-        /// Change amount if book exist
+        /// Add a new <see cref="Book"/>.
+        /// Change the amount if the <see cref="Book"/> exist.
         /// </summary>
-        /// <param name="adminId">user id</param>
-        /// <param name="Id">book id</param>
-        /// <param name="title">book title</param>
-        /// <param name="author">author</param>
-        /// <param name="price">price</param>
-        /// <param name="amount">amount</param>
-        /// <returns>true if success</returns>
+        /// <param name="adminId">user id  <see cref="int"/></param>
+        /// <param name="Id">book id  <see cref="int"/></param>
+        /// <param name="title">book title  <see cref="string"/></param>
+        /// <param name="author">author  <see cref="string"/></param>
+        /// <param name="price">price <see cref="int"/></param>
+        /// <param name="amount">amount <see cref="int"/></param>
+        /// <returns> <see cref="bool"/></returns>
         public static bool AddBook(int adminId, int Id, string title, string author, int price, int amount)
         {
             UpdateSession();
@@ -235,11 +244,11 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// Set amount of available books
+        /// Set amount of available <see cref="Book"/>s
         /// </summary>
-        /// <param name="adminId">user id</param>
-        /// <param name="bookId">book id</param>
-        /// <param name="amount">amount</param>
+        /// <param name="adminId">user id  <see cref="int"/></param>
+        /// <param name="bookId">book id  <see cref="int"/></param>
+        /// <param name="amount">amount  <see cref="int"/></param>
         public static void SetAmount(int adminId, int bookId, int amount)
         {
             UpdateSession();
@@ -265,10 +274,10 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// List all users by name
+        /// List all <see cref="User"/>s by name
         /// </summary>
-        /// <param name="adminId">user id</param>
-        /// <returns>List<User></returns>
+        /// <param name="adminId">user id  <see cref="int"/></param>
+        /// <returns> <see cref="List{User}"/></returns>
         public static List<User> ListUsers(int adminId)
         {
             UpdateSession();
@@ -280,11 +289,11 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// Find users by keyword
+        /// Find <see cref="User"/> by keyword
         /// </summary>
-        /// <param name="adminId">user(admin) id</param>
-        /// <param name="keyword">kyword used to find users</param>
-        /// <returns>List<User></returns>
+        /// <param name="adminId">user(admin) id <see cref="int"/></param>
+        /// <param name="keyword">kyword used to find users <see cref="string"/></param>
+        /// <returns><see cref="List{User}"/></returns>
         public static List<User> FindUser(int adminId, string keyword)
         {
             UpdateSession();
@@ -296,13 +305,13 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// Update the book
+        /// Update the <see cref="Book"/>
         /// </summary>
-        /// <param name="adminId">user id</param>
-        /// <param name="title">new book title</param>
-        /// <param name="author">new author</param>
-        /// <param name="price">new price</param>
-        /// <returns>true if success</returns>
+        /// <param name="adminId">user id <see cref="int"/></param>
+        /// <param name="title">new book title <see cref="string"/></param>
+        /// <param name="author">new author <see cref="string"/></param>
+        /// <param name="price">new price <see cref="int"/></param>
+        /// <returns><see cref="bool"/></returns>
         public static bool UpdateBook(int adminId, int bookId, string title, string author, int price)
         {
             UpdateSession();
@@ -333,11 +342,11 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// Delete the book
+        /// Delete the <see cref="Book"/>
         /// </summary>
-        /// <param name="adminId">user id</param>
-        /// <param name="bookId">book id</param>
-        /// <returns>true if success</returns>
+        /// <param name="adminId">user id <see cref="int"/></param>
+        /// <param name="bookId">book id <see cref="int"/></param>
+        /// <returns><see cref="bool"/></returns>
         public static bool DeleteBook(int adminId, int bookId)
         {
             UpdateSession();
@@ -364,23 +373,24 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// Add a new category
+        /// Add a new <see cref="BookCategory"/>
         /// </summary>
-        /// <param name="adminId">user id</param>
-        /// <param name="name">category name</param>
-        /// <returns>true or false</returns>
+        /// <param name="adminId">user id <see cref="int"/></param>
+        /// <param name="name">category name <see cref="string"/></param>
+        /// <returns><see cref="bool"/></returns>
         public static bool AddCategory(int adminId, string name)
         {
             UpdateSession();
             try
             {
                 var category = context.BookCategories.FirstOrDefault(c => c.Name == name);
-                if (IsAdmin(adminId) && category == null) 
+                if (IsAdmin(adminId) && category == null)
                 {
                     context.BookCategories.Add(new BookCategory { Name = name });
                     context.SaveChanges();
                     return true;
-                } else
+                }
+                else
                 {
                     Console.WriteLine("Category already exist");
                     return false;
@@ -395,12 +405,12 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// Add book to category
+        /// Add <see cref="Book"/> to <see cref="BookCategory"/>
         /// </summary>
-        /// <param name="adminId">user id</param>
-        /// <param name="bookId">book id</param>
-        /// <param name="categoryId">category id</param>
-        /// <returns>true or false</returns>
+        /// <param name="adminId">user id <see cref="int"/></param>
+        /// <param name="bookId">book id <see cref="int"/></param>
+        /// <param name="categoryId">category id <see cref="int"/></param>
+        /// <returns><see cref="bool"/></returns>
         public static bool AddBookToCategory(int adminId, int bookId, int categoryId)
         {
             UpdateSession();
@@ -430,12 +440,12 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// Update category name
+        /// Update <see cref="BookCategory"/> name
         /// </summary>
-        /// <param name="adminId">user id</param>
-        /// <param name="categoryId">category id</param>
-        /// <param name="name">category name</param>
-        /// <returns>true or false</returns>
+        /// <param name="adminId">user id <see cref="int"/></param>
+        /// <param name="categoryId">category id <see cref="int"/></param>
+        /// <param name="name">category name <see cref="string"/></param>
+        /// <returns><see cref="bool"/></returns>
         public static bool UpdateCategory(int adminId, int categoryId, string name)
         {
             UpdateSession();
@@ -447,7 +457,7 @@ namespace WebbShopApi.Helpers
                     category.Name = name;
                     context.BookCategories.Update(category);
                     context.SaveChanges();
-                    return true; 
+                    return true;
                 }
             }
             catch (NullReferenceException e)
@@ -463,11 +473,11 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// Delete category
+        /// Delete <see cref="BookCategory"/>
         /// </summary>
-        /// <param name="adminId">admin id</param>
-        /// <param name="categoryId">category id</param>
-        /// <returns>true or false</returns>
+        /// <param name="adminId">admin id <see cref="int"/></param>
+        /// <param name="categoryId">category id <see cref="int"/></param>
+        /// <returns><see cref="bool"/></returns>
         public static bool DeleteCategory(int adminId, int categoryId)
         {
             UpdateSession();
@@ -494,12 +504,12 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// Add a new user
+        /// Add a new <see cref="User"/>
         /// </summary>
-        /// <param name="adminId">admin id</param>
-        /// <param name="name">new user name</param>
-        /// <param name="password">new user password</param>
-        /// <returns>true or false</returns>
+        /// <param name="adminId">admin id <see cref="int"/></param>
+        /// <param name="name">new user name <see cref="string"/></param>
+        /// <param name="password">new user password <see cref="string"/></param>
+        /// <returns><see cref="bool"/></returns>
         public static bool AddUser(int adminId, string name, string password)
         {
             UpdateSession();
@@ -516,10 +526,10 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
-        /// Checks if a user with a given id is an administrator
+        /// Checks if a <see cref="User"/> with a given id is an administrator
         /// </summary>
-        /// <param name="adminId">used to specify user id</param>
-        /// <returns>true or false</returns>
+        /// <param name="adminId">used to specify user id <see cref="int"/></param>
+        /// <returns><see cref="bool"/></returns>
         private static bool IsAdmin(int adminId)
         {
             try
@@ -542,15 +552,16 @@ namespace WebbShopApi.Helpers
 
         /// <summary>
         /// Updates user session.
-        /// Logout if the session more than 15 min old
+        /// Logout if the session more than 15 min old.
         /// </summary>
         private static void UpdateSession()
         {
             //Console.WriteLine($"[UpdateSession] Before {tempUser.Name} : {tempUser.SessionTimer}");
-            if(tempUser.SessionTimer > DateTime.Now.AddMinutes(-15))
+            if (tempUser.SessionTimer > DateTime.Now.AddMinutes(-15))
             {
                 Logout(tempUser.UserId);
-            } else
+            }
+            else
             {
                 tempUser.SessionTimer = DateTime.Now;
                 context.Users.Update(tempUser);
