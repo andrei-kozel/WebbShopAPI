@@ -11,7 +11,7 @@ namespace WebbShopApi.Database
     /// Defines the <see cref="MyContext" />.
     /// </summary>
     class MyContext : DbContext
-    {
+    { 
         private const string DatabaseName = "WebbShopAndreiKozel";
 
         public DbSet<Book> Books { get; set; }
