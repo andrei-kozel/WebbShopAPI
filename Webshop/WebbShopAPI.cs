@@ -526,6 +526,181 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
+        /// List all <see cref="SoldBook"/>s sorted by title
+        /// </summary>
+        /// <param name="adminId">user id <see cref="int"/></param>
+        /// <returns><see cref="List{SoldBook}"/></returns>
+        public static List<SoldBook> SoldItems(int adminId)
+        {
+            UpdateSession();
+            if (IsAdmin(adminId))
+            {
+                return context.SoldBooks.OrderBy(b => b.Title).ToList();
+            }
+            return new List<SoldBook>();
+        }
+
+        /// <summary>
+        /// Check how much maney was earned
+        /// </summary>
+        /// <param name="adminId">user id <see cref="int"/></param>
+        /// <returns><see cref="int"/></returns>
+        public static int MoneyEarned(int adminId)
+        {
+            UpdateSession();
+            if (IsAdmin(adminId))
+            {
+                return context.SoldBooks.Sum(b => b.Price);
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// Get <see cref="User"/> that bought most <see cref="Book"/>s
+        /// </summary>
+        /// <param name="adminId">user id <see cref="int"/></param>
+        /// <returns>User ID: <see cref="int"/></returns>
+        public static int BestCustomer(int adminId)
+        {
+            UpdateSession();
+            if (IsAdmin(adminId))
+            {
+                return context.SoldBooks.GroupBy(u => u.UserId).OrderByDescending(u => u.Count()).Select(u => u.Key).First();
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// Make a <see cref="User"/> an administrator
+        /// </summary>
+        /// <param name="adminId">admin id <see cref="int"/></param>
+        /// <param name="userId">user id <see cref="int"/></param>
+        /// <returns><see cref="bool"/></returns>
+        public static bool Promote(int adminId, int userId)
+        {
+            UpdateSession();
+            try
+            {
+                var userToPromote = context.Users.FirstOrDefault(c => c.UserId == userId);
+                if (IsAdmin(adminId))
+                {
+                    userToPromote.IsAdmin = true;
+                    context.Users.Update(userToPromote);
+                    context.SaveChanges();
+                    return true;
+                }
+            }
+            catch (NullReferenceException e)
+            {
+                Console.WriteLine("[Promote] Can't find the user");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("[Promote] Something went wrong ...");
+                Console.WriteLine(e);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Demote admin
+        /// </summary>
+        /// <param name="adminId">admin id <see cref="int"/></param>
+        /// <param name="secondAdminId">second admin id <see cref="int"/></param>
+        /// <returns><see cref="bool"/></returns>
+        public static bool Demote(int adminId, int secondAdminId)
+        {
+            UpdateSession();
+            try
+            {
+                var adminToDemote = context.Users.FirstOrDefault(c => c.UserId == secondAdminId);
+                if (IsAdmin(adminId))
+                {
+                    adminToDemote.IsAdmin = false;
+                    context.Users.Update(adminToDemote);
+                    context.SaveChanges();
+                    return true;
+                }
+            }
+            catch (NullReferenceException e)
+            {
+                Console.WriteLine("[Demote] Can't find the user");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("[Demote] Something went wrong ...");
+                Console.WriteLine(e);
+            }
+            return false;
+        }
+
+
+        /// <summary>
+        /// Activate <see cref="User"/>
+        /// </summary>
+        /// <param name="adminId">admin id <see cref="int"/></param>
+        /// <param name="userId">user id <see cref="int"/></param>
+        /// <returns><see cref="bool"/></returns>
+        public static bool ActivateUser(int adminId, int userId)
+        {
+            UpdateSession();
+            try
+            {
+                var user = context.Users.FirstOrDefault(c => c.UserId == userId);
+                if (IsAdmin(adminId))
+                {
+                    user.IsActiove = true;
+                    context.Users.Update(user);
+                    context.SaveChanges();
+                    return true;
+                }
+            }
+            catch (NullReferenceException e)
+            {
+                Console.WriteLine("[ActivateUser] Can't find the user");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("[ActivateUser] Something went wrong ...");
+                Console.WriteLine(e);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Inactivate <see cref="User"/>
+        /// </summary>
+        /// <param name="adminId">admin id <see cref="int"/></param>
+        /// <param name="userId">user id <see cref="int"/></param>
+        /// <returns><see cref="bool"/></returns>
+        public static bool InactivateUser(int adminId, int userId)
+        {
+            UpdateSession();
+            try
+            {
+                var user = context.Users.FirstOrDefault(c => c.UserId == userId);
+                if (IsAdmin(adminId))
+                {
+                    user.IsActiove = false;
+                    context.Users.Update(user);
+                    context.SaveChanges();
+                    return true;
+                }
+            }
+            catch (NullReferenceException e)
+            {
+                Console.WriteLine("[InactivateUser] Can't find the user");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("[InactivateUser] Something went wrong ...");
+                Console.WriteLine(e);
+            }
+            return false;
+        }
+
+
+        /// <summary>
         /// Checks if a <see cref="User"/> with a given id is an administrator
         /// </summary>
         /// <param name="adminId">used to specify user id <see cref="int"/></param>
