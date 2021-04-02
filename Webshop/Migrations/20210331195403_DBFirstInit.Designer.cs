@@ -10,8 +10,8 @@ using WebbShopApi.Database;
 namespace WebbShopApi.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20210315211502_InitializeDatabase")]
-    partial class InitializeDatabase
+    [Migration("20210331195403_DBFirstInit")]
+    partial class DBFirstInit
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using WebbShopApi.Database;
-using WebbShopApi.Helpers;
 
 namespace WebbShopApi
 {
@@ -134,7 +133,7 @@ namespace WebbShopApi
         {
             Console.WriteLine($"TEST: Get amount by id {id}");
             Console.WriteLine();
-            var book = WebbShopAPI.GetBook(id);
+            var book = WebbShopAPI.GetBook(1, id);
             Console.WriteLine($"{book.Name} - {book.Amount}st");
             Continue();
         }
@@ -147,7 +146,7 @@ namespace WebbShopApi
         {
             Console.WriteLine($"TEST: List books contains {v}");
             Console.WriteLine();
-            var books = WebbShopAPI.GetBooks(v);
+            var books = WebbShopAPI.GetBooks(1, v);
             foreach (var b in books)
             {
                 Console.WriteLine(b.Name);
@@ -161,7 +160,7 @@ namespace WebbShopApi
         {
             Console.WriteLine("TEST: List horror books");
             Console.WriteLine();
-            var books = WebbShopAPI.GetCategory(1);
+            var books = WebbShopAPI.GetCategory(1, 1);
             foreach (var b in books)
             {
                 Console.WriteLine(b.Name);

@@ -4,7 +4,7 @@ using System.Linq;
 using WebbShopApi.Database;
 using WebbShopApi.Models;
 
-namespace WebbShopApi.Helpers
+namespace WebbShopApi
 {
     /// <summary>
     /// Defines the <see cref="WebbShopAPI" />.
@@ -20,6 +20,8 @@ namespace WebbShopApi.Helpers
         /// Defines the temporary <see cref="User"/>
         /// </summary>
         private static User tempUser;
+
+
 
         /// <summary>
         /// Login the <see cref="User"/>
@@ -67,24 +69,40 @@ namespace WebbShopApi.Helpers
         }
 
         /// <summary>
+        /// Get all books in store sorted by name
+        /// </summary>
+        public static List<Book> GetAllBooks() => context.Books.OrderBy(b => b.Name).ToList();
+
+        /// <summary>
+        /// Get all users sorted by name
+        /// </summary>
+        public static List<User> GetAllUsers() => context.Users.OrderBy(u => u.Name).ToList();
+
+
+        /// <summary>
         /// List all <see cref="BookCategory"/>
         /// </summary>
         /// <returns><see cref="List{BookCategory}"/></returns>
-        public static List<BookCategory> GetCategories()
-        {
-            UpdateSession();
-            return context.BookCategories.OrderBy(c => c.Name).ToList();
-        }
+        public static List<BookCategory> GetCategories() => context.BookCategories.OrderBy(c => c.BookCategoryId).ToList();
+
 
         /// <summary>
         /// List of <see cref="BookCategory"/>s matching keyword
         /// </summary>
         /// <param name="keyword">used to specifie keyword <see cref="string"/></param>
         /// <returns><see cref="List{BookCategory}"/></returns>
-        public static List<BookCategory> GetCategories(string keyword)
+        public static List<BookCategory> GetCategories(string keyword) => context.BookCategories.Where(c => c.Name.Contains(keyword)).OrderBy(c => c.Name).ToList();
+
+
+        /// <summary>
+        /// List of <see cref="Book"/>s in <see cref="BookCategory"/>
+        /// </summary>
+        /// <param name="categoryId">Category Id <see cref="int"/></param>
+        /// <returns><see cref="List{Book}"/></returns>
+        public static List<Book> GetCategory(int userId, int categoryId)
         {
-            UpdateSession();
-            return context.BookCategories.Where(c => c.Name.Contains(keyword)).OrderBy(c => c.Name).ToList();
+            UpdateSession(userId);
+            return context.Books.Where(b => b.BookCategoryId == categoryId).OrderBy(b => b.Name).ToList();
         }
 
         /// <summary>
@@ -92,10 +110,13 @@ namespace WebbShopApi.Helpers
         /// </summary>
         /// <param name="categoryId">Category Id <see cref="int"/></param>
         /// <returns><see cref="List{Book}"/></returns>
-        public static List<Book> GetCategory(int categoryId)
+        public static BookCategory GetCategoryById(int userId, int categoryId)
         {
-            UpdateSession();
-            return context.Books.Where(b => b.BookCategoryId == categoryId).OrderBy(b => b.Name).ToList();
+            if (IsAdmin(userId)) {
+                UpdateSession(userId);
+                return context.BookCategories.FirstOrDefault(c => c.BookCategoryId == categoryId);
+            }
+            return new BookCategory();
         }
 
         /// <summary>
@@ -103,10 +124,10 @@ namespace WebbShopApi.Helpers
         /// </summary>
         /// <param name="categoryId">used to specify category id <see cref="int"/></param>
         /// <returns><see cref="List{Book}"/></returns>
-        public static List<Book> GetAvailableBooks(int categoryId)
+        public static List<Book> GetBooksFromCategory(int userId, int categoryId)
         {
-            UpdateSession();
-            return context.Books.Where(b => b.BookId == categoryId && b.Amount > 0).OrderBy(b => b.Name).ToList();
+            UpdateSession(userId);
+            return context.Books.Where(b => b.BookCategoryId == categoryId).OrderBy(b => b.Name).ToList();
         }
 
         /// <summary>
@@ -114,9 +135,9 @@ namespace WebbShopApi.Helpers
         /// </summary>
         /// <param name="bookId">used to specify book id <see cref="int"/></param>
         /// <returns>Book object <see cref="Book"/></returns>
-        public static Book GetBook(int bookId)
+        public static Book GetBook(int userId, int bookId)
         {
-            UpdateSession();
+            UpdateSession(userId);
             return context.Books.FirstOrDefault(b => b.BookId == bookId);
         }
 
@@ -125,9 +146,9 @@ namespace WebbShopApi.Helpers
         /// </summary>
         /// <param name="keyword">used to specifie keyword <see cref="string"/></param>
         /// <returns><see cref="List{Book}"/></returns>
-        public static List<Book> GetBooks(string keyword)
+        public static List<Book> GetBooks(int userId, string keyword)
         {
-            UpdateSession();
+            UpdateSession(userId);
             return context.Books.Where(b => b.Name.Contains(keyword)).OrderBy(b => b.Name).ToList();
         }
 
@@ -136,9 +157,9 @@ namespace WebbShopApi.Helpers
         /// </summary>
         /// <param name="keyword">used to specify keyword <see cref="string"/></param>
         /// <returns><see cref="List{Book}"/></returns>
-        public static List<Book> GetAuthors(string keyword)
+        public static List<Book> GetAuthors(int userId, string keyword)
         {
-            UpdateSession();
+            UpdateSession(userId);
             return context.Books.Where(b => b.Author.Contains(keyword)).OrderBy(b => b.Name).ToList();
         }
 
@@ -150,13 +171,14 @@ namespace WebbShopApi.Helpers
         /// <returns><see cref="bool"/></returns>
         public static bool BuyBook(int userId, int bookId)
         {
-            UpdateSession();
+            
             var user = context.Users.FirstOrDefault(u => u.UserId == userId);
             if (user == null) { return false; };
             var book = context.Books.FirstOrDefault(b => b.BookId == bookId);
             if (book == null) { return false; }
             if (book.Amount <= 0) { return false; }
 
+            UpdateSession(userId);
             context.SoldBooks.Add(
                 new SoldBook
                 {
@@ -181,13 +203,23 @@ namespace WebbShopApi.Helpers
         /// <returns><see cref="string"/></returns>
         public static string Ping(int userId)
         {
-            UpdateSession();
+            UpdateSession(userId);
             var user = context.Users.FirstOrDefault(u => u.UserId == userId);
             if (user.SessionTimer > DateTime.Now.AddMinutes(-15))
             {
                 return String.Empty;
             }
             return "Pong";
+        }
+
+        /// <summary>
+        /// Get <see cref="User"/> object by Id
+        /// </summary>
+        /// <param name="userId">user id <see cref="int"/></param>
+        /// <returns><see cref="User"/></returns>
+        public static User GetUserById(int userId)
+        {
+            return context.Users.FirstOrDefault(u => u.UserId == userId);
         }
 
         /// <summary>
@@ -199,10 +231,10 @@ namespace WebbShopApi.Helpers
         /// <returns> <see cref="bool"/></returns>
         public static bool Register(string name, string password, string passwordVerify)
         {
-            UpdateSession();
             if (password == passwordVerify)
             {
                 context.Users.Add(new User { Name = name, Password = password });
+                context.SaveChanges();
                 return true;
             }
             return false;
@@ -221,19 +253,21 @@ namespace WebbShopApi.Helpers
         /// <param name="price">price <see cref="int"/></param>
         /// <param name="amount">amount <see cref="int"/></param>
         /// <returns> <see cref="bool"/></returns>
-        public static bool AddBook(int adminId, int Id, string title, string author, int price, int amount)
+        public static bool AddBook(int adminId, int Id, string title, string author, int price, int amount, int bookCategoryId)
         {
-            UpdateSession();
             var book = context.Books.FirstOrDefault(b => b.BookId == Id && b.Name == title);
             if (IsAdmin(adminId))
             {
+                UpdateSession(adminId);
                 if (book == null)
                 {
-                    context.Books.Add(new Book { Name = title, Author = author, Price = price, Amount = amount });
+                    context.Books.Add(new Book { Name = title, Author = author, Price = price, Amount = amount, BookCategoryId = bookCategoryId });
+                    context.SaveChanges();
                     return true;
                 }
                 else if (book != null)
                 {
+                    Console.WriteLine("ADD BOOK NOT OK");
                     book.Amount += amount;
                     context.Books.Update(book);
                     context.SaveChanges();
@@ -251,11 +285,11 @@ namespace WebbShopApi.Helpers
         /// <param name="amount">amount  <see cref="int"/></param>
         public static void SetAmount(int adminId, int bookId, int amount)
         {
-            UpdateSession();
             if (IsAdmin(adminId))
             {
                 try
                 {
+                    UpdateSession(adminId);
                     var book = context.Books.FirstOrDefault(b => b.BookId == bookId);
                     book.Amount = amount;
                     context.Books.Update(book);
@@ -280,9 +314,9 @@ namespace WebbShopApi.Helpers
         /// <returns> <see cref="List{User}"/></returns>
         public static List<User> ListUsers(int adminId)
         {
-            UpdateSession();
             if (IsAdmin(adminId))
             {
+                UpdateSession(adminId);
                 return context.Users.OrderBy(u => u.Name).ToList();
             }
             return new List<User>();
@@ -296,9 +330,9 @@ namespace WebbShopApi.Helpers
         /// <returns><see cref="List{User}"/></returns>
         public static List<User> FindUser(int adminId, string keyword)
         {
-            UpdateSession();
             if (IsAdmin(adminId))
             {
+                UpdateSession(adminId);
                 return context.Users.Where(u => u.Name.Contains(keyword)).OrderBy(u => u.Name).ToList();
             }
             return new List<User>();
@@ -312,18 +346,20 @@ namespace WebbShopApi.Helpers
         /// <param name="author">new author <see cref="string"/></param>
         /// <param name="price">new price <see cref="int"/></param>
         /// <returns><see cref="bool"/></returns>
-        public static bool UpdateBook(int adminId, int bookId, string title, string author, int price)
+        public static bool UpdateBook(int adminId, int bookId, string title, string author, int price, int amount, int bookCategoryId)
         {
-            UpdateSession();
             try
             {
                 if (IsAdmin(adminId))
                 {
+                    UpdateSession(adminId);
                     var book = context.Books.FirstOrDefault(b => b.BookId == bookId);
 
                     book.Name = title;
                     book.Author = author;
                     book.Price = price;
+                    book.Amount = amount;
+                    book.BookCategoryId = bookCategoryId;
                     context.Books.Update(book);
                     context.SaveChanges();
                     return true;
@@ -349,11 +385,11 @@ namespace WebbShopApi.Helpers
         /// <returns><see cref="bool"/></returns>
         public static bool DeleteBook(int adminId, int bookId)
         {
-            UpdateSession();
             try
             {
                 if (IsAdmin(adminId))
                 {
+                    UpdateSession(adminId);
                     var book = context.Books.FirstOrDefault(b => b.BookId == bookId);
                     context.Books.Remove(book);
                     context.SaveChanges();
@@ -380,12 +416,12 @@ namespace WebbShopApi.Helpers
         /// <returns><see cref="bool"/></returns>
         public static bool AddCategory(int adminId, string name)
         {
-            UpdateSession();
             try
             {
                 var category = context.BookCategories.FirstOrDefault(c => c.Name == name);
                 if (IsAdmin(adminId) && category == null)
                 {
+                    UpdateSession(adminId);
                     context.BookCategories.Add(new BookCategory { Name = name });
                     context.SaveChanges();
                     return true;
@@ -413,13 +449,13 @@ namespace WebbShopApi.Helpers
         /// <returns><see cref="bool"/></returns>
         public static bool AddBookToCategory(int adminId, int bookId, int categoryId)
         {
-            UpdateSession();
             try
             {
                 var book = context.Books.FirstOrDefault(b => b.BookId == bookId);
                 var category = context.BookCategories.FirstOrDefault(c => c.BookCategoryId == categoryId);
                 if (IsAdmin(adminId))
                 {
+                    UpdateSession(adminId);
                     // make sure that the category exists
                     book.BookCategoryId = category.BookCategoryId;
                     context.Books.Update(book);
@@ -448,12 +484,12 @@ namespace WebbShopApi.Helpers
         /// <returns><see cref="bool"/></returns>
         public static bool UpdateCategory(int adminId, int categoryId, string name)
         {
-            UpdateSession();
             try
             {
                 var category = context.BookCategories.FirstOrDefault(c => c.BookCategoryId == categoryId);
                 if (IsAdmin(adminId))
                 {
+                    UpdateSession(adminId);
                     category.Name = name;
                     context.BookCategories.Update(category);
                     context.SaveChanges();
@@ -480,12 +516,12 @@ namespace WebbShopApi.Helpers
         /// <returns><see cref="bool"/></returns>
         public static bool DeleteCategory(int adminId, int categoryId)
         {
-            UpdateSession();
             try
             {
                 var category = context.BookCategories.FirstOrDefault(c => c.BookCategoryId == categoryId);
                 if (IsAdmin(adminId))
                 {
+                    UpdateSession(adminId);
                     context.BookCategories.Remove(category);
                     context.SaveChanges();
                     return true;
@@ -512,11 +548,11 @@ namespace WebbShopApi.Helpers
         /// <returns><see cref="bool"/></returns>
         public static bool AddUser(int adminId, string name, string password)
         {
-            UpdateSession();
             try
             {
                 if (IsAdmin(adminId))
                 {
+                    UpdateSession(adminId);
                     context.Users.Add(new User { Name = name, Password = password });
                     context.SaveChanges();
                 }
@@ -532,9 +568,9 @@ namespace WebbShopApi.Helpers
         /// <returns><see cref="List{SoldBook}"/></returns>
         public static List<SoldBook> SoldItems(int adminId)
         {
-            UpdateSession();
             if (IsAdmin(adminId))
             {
+                UpdateSession(adminId);
                 return context.SoldBooks.OrderBy(b => b.Title).ToList();
             }
             return new List<SoldBook>();
@@ -547,10 +583,13 @@ namespace WebbShopApi.Helpers
         /// <returns><see cref="int"/></returns>
         public static int MoneyEarned(int adminId)
         {
-            UpdateSession();
             if (IsAdmin(adminId))
             {
-                return context.SoldBooks.Sum(b => b.Price);
+                UpdateSession(adminId);
+                if(context.SoldBooks.Count() > 0)
+                {
+                    return context.SoldBooks.Sum(b => b.Price);
+                }
             }
             return 0;
         }
@@ -562,10 +601,13 @@ namespace WebbShopApi.Helpers
         /// <returns>User ID: <see cref="int"/></returns>
         public static int BestCustomer(int adminId)
         {
-            UpdateSession();
             if (IsAdmin(adminId))
             {
-                return context.SoldBooks.GroupBy(u => u.UserId).OrderByDescending(u => u.Count()).Select(u => u.Key).First();
+                if (context.SoldBooks.Count() > 0)
+                {
+                    UpdateSession(adminId);
+                    return context.SoldBooks.GroupBy(u => u.UserId).OrderByDescending(u => u.Count()).Select(u => u.Key).First();
+                }
             }
             return 0;
         }
@@ -578,12 +620,12 @@ namespace WebbShopApi.Helpers
         /// <returns><see cref="bool"/></returns>
         public static bool Promote(int adminId, int userId)
         {
-            UpdateSession();
             try
             {
                 var userToPromote = context.Users.FirstOrDefault(c => c.UserId == userId);
                 if (IsAdmin(adminId))
                 {
+                    UpdateSession(adminId);
                     userToPromote.IsAdmin = true;
                     context.Users.Update(userToPromote);
                     context.SaveChanges();
@@ -593,6 +635,7 @@ namespace WebbShopApi.Helpers
             catch (NullReferenceException e)
             {
                 Console.WriteLine("[Promote] Can't find the user");
+                Console.WriteLine(e);
             }
             catch (Exception e)
             {
@@ -610,12 +653,12 @@ namespace WebbShopApi.Helpers
         /// <returns><see cref="bool"/></returns>
         public static bool Demote(int adminId, int secondAdminId)
         {
-            UpdateSession();
             try
             {
                 var adminToDemote = context.Users.FirstOrDefault(c => c.UserId == secondAdminId);
                 if (IsAdmin(adminId))
                 {
+                    UpdateSession(adminId);
                     adminToDemote.IsAdmin = false;
                     context.Users.Update(adminToDemote);
                     context.SaveChanges();
@@ -643,12 +686,12 @@ namespace WebbShopApi.Helpers
         /// <returns><see cref="bool"/></returns>
         public static bool ActivateUser(int adminId, int userId)
         {
-            UpdateSession();
             try
             {
                 var user = context.Users.FirstOrDefault(c => c.UserId == userId);
                 if (IsAdmin(adminId))
                 {
+                    UpdateSession(adminId);
                     user.IsActiove = true;
                     context.Users.Update(user);
                     context.SaveChanges();
@@ -674,13 +717,13 @@ namespace WebbShopApi.Helpers
         /// <param name="userId">user id <see cref="int"/></param>
         /// <returns><see cref="bool"/></returns>
         public static bool InactivateUser(int adminId, int userId)
-        {
-            UpdateSession();
+        {   
             try
             {
                 var user = context.Users.FirstOrDefault(c => c.UserId == userId);
                 if (IsAdmin(adminId))
                 {
+                    UpdateSession(adminId);
                     user.IsActiove = false;
                     context.Users.Update(user);
                     context.SaveChanges();
@@ -729,20 +772,31 @@ namespace WebbShopApi.Helpers
         /// Updates user session.
         /// Logout if the session more than 15 min old.
         /// </summary>
-        private static void UpdateSession()
+        private static void UpdateSession(int id)
         {
             //Console.WriteLine($"[UpdateSession] Before {tempUser.Name} : {tempUser.SessionTimer}");
-            if (tempUser.SessionTimer > DateTime.Now.AddMinutes(-15))
+            var user = GetUserById(id);
+
+            if ((DateTime.Now - user.SessionTimer).TotalMinutes >=15)
             {
-                Logout(tempUser.UserId);
+                Logout(user.UserId);
             }
             else
             {
-                tempUser.SessionTimer = DateTime.Now;
-                context.Users.Update(tempUser);
+                user.SessionTimer = DateTime.Now;
+                context.Users.Update(user);
                 context.SaveChanges();
+                Console.WriteLine(user.SessionTimer);
             }
             //Console.WriteLine($"[UpdateSession] After {tempUser.Name} : {context.Users.FirstOrDefault(u => u.UserId == tempUser.UserId).SessionTimer}");
+        }
+
+        /// <summary>
+        /// Generate DB 
+        /// </summary>
+        public static void GenerateDB()
+        {
+            Seeder.Seed();
         }
     }
 }

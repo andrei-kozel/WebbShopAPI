@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace WebbShopApi.Database
+﻿namespace WebbShopApi.Database
 {
     using Microsoft.EntityFrameworkCore;
     using WebbShopApi.Models;
@@ -10,7 +6,7 @@ namespace WebbShopApi.Database
     /// <summary>
     /// Defines the <see cref="MyContext" />.
     /// </summary>
-    class MyContext : DbContext
+    public class MyContext : DbContext
     { 
         private const string DatabaseName = "WebbShopAndreiKozel";
 
